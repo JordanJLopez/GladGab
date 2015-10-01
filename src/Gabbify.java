@@ -24,7 +24,6 @@ public class Gabbify {
 		System.out.println("Please input words: ");
 		inString = input.nextLine().toUpperCase();
 		
-		input.close();
 		
 		inStringSplit = inString.split(" ");
 		
@@ -49,21 +48,30 @@ public class Gabbify {
 		String output = null;
 		while(!done)
 		{
-			output = convert(0);
-			if(output != null)
+			if(inSyllables == null)
+			{
 				done = true;
+				System.out.println("ERROR: Exhausted GladGab combinations");
+			}
 			else
 			{
+				output = convert(0);
+				if(output != null)
+				{
+					System.out.println(output + "\nFind another? (Y/N)");
+					if(input.nextLine().toUpperCase().equals("N"))
+						done = true;				
+				}
 				inSyllables = gladGab.nextSylArray();
-				if(inSyllables == null)
-					done = true;
 			}
+			
 		}
 		System.out.println(output);
 		
+		input.close();
+		
 
 	}
-	
 	/*	convert() implements our gabbifying algorithm.
 	 *	
 	 * 	We index each syllable in the input string, and starting
