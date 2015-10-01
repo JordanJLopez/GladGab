@@ -36,8 +36,7 @@ public class GladGab {
 	
 	final int NUM_SYLLABLES = 38;
 	private HashMap<String, String[]> sylMap;
-	private HashMap<String[], Boolean>	combMap;
-	private Stack<String[]> combinations;
+	private Queue<String[]> combinations;
 
 	
 	public GladGab(String[] inSyllables) 
@@ -47,7 +46,10 @@ public class GladGab {
 		gladSylArray = new GladSyl[inSyllables.length];
 		
 		init();
-		createCombinations();
+		//createCombinations();
+		combinations = new LinkedList<String[]>();
+		createCombinations(0);
+		System.out.println(combinations.size());
 		
 	}
 	
@@ -91,62 +93,27 @@ public class GladGab {
 		
 	}
 	
-	private void createCombinations()
+	private void createCombinations(Integer currentIndex)
 	{
-		
-		//	Creates all possible combinations of the input syllables
-		//	and stores them in combinations for easy retrieval
-		
-		combinations = new Stack<String[]>();
-		combMap = new HashMap<String[], Boolean>();
-		int lastSylIndex = unalteredSyllables.length - 1;
-		int modifier = 0;
-		
-		if(lastSylIndex != 0)
+		if(currentIndex >= workingSyllables.length)
 		{
-			modifier = 1;
+			combinations.add(workingSyllables.clone());
+			return;
 		}
-		for(int currentIndex = lastSylIndex - modifier; currentIndex >= 0; currentIndex--)
+		
+		for(int i = 0; i < gladSylArray[currentIndex].getNumSimilarSyl(); i++)
 		{
-			workingSyllables = unalteredSyllables;
-			for(int variationCurrentIndex = 0; variationCurrentIndex < gladSylArray[currentIndex].getNumSimilarSyl(); variationCurrentIndex++)
-			{
-				workingSyllables[currentIndex] = gladSylArray[currentIndex].getSylAt(variationCurrentIndex);
-				boolean ran = false;
-				for(int changeIndex = lastSylIndex; changeIndex > currentIndex; changeIndex--)
-				{
-					ran = true;
-					//if(currentIndex != changeIndex)
-						for(int variationChangeIndex = 0; variationChangeIndex < gladSylArray[changeIndex].getNumSimilarSyl(); variationChangeIndex++)
-						{
-							workingSyllables[changeIndex] = gladSylArray[changeIndex].getSylAt(variationChangeIndex);
-							//System.out.println(createString(0, lastSylIndex));
-							//if(combinations.empty() || !combinations.peek().equals(workingSyllables))
-							//System.out.println("Pushing "+createString(0, lastSylIndex));
-								combMap.put(workingSyllables.clone(), true);
-						}
-				}
-				if(!ran)
-				{
-					//System.out.println("Pushing "+createString(0, lastSylIndex));
-					combMap.put(workingSyllables.clone(), true);
-				}
-					
-			}
+			workingSyllables[currentIndex] = gladSylArray[currentIndex].getSylAt(i);
+			createCombinations(currentIndex + 1);
 		}
-		for(String[] entry : combMap.keySet())
-		{
-			combinations.push(entry);
-		}
-		//System.out.println(combinations.size());
 	}
 	
 	public String[] nextSylArray()
 	{
 		//System.out.println("NextSylArray called");
-		if(!combinations.empty())
+		if(!combinations.isEmpty())
 		{
-			workingSyllables = combinations.pop();
+			workingSyllables = combinations.remove();
 			//System.out.println("Returning "+createString(0, workingSyllables.length - 1));
 			return workingSyllables;
 		}

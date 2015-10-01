@@ -66,7 +66,7 @@ public class Gabbify {
 			}
 			
 		}
-		System.out.println(output);
+		//System.out.println(output);
 		
 		input.close();
 		
